@@ -25977,6 +25977,13 @@ bool emberAfManagerGetReportRealTimeCallback(uint8_t* reportTime);
  * @param reportStr   Ver.: always
  */
 bool emberAfManagerGetReportTimeCallback(uint16_t reportStr);
+/** @brief Manager Cluster Get Time Report
+ *
+ * 
+ *
+ * @param getTimeReport   Ver.: always
+ */
+bool emberAfManagerGetTimeReportCallback(uint8_t getTimeReport);
 /** @brief Manager Cluster Put Dimming
  *
  * 
@@ -26033,6 +26040,13 @@ bool emberAfManagerPutReportRealTimeCallback(uint8_t* reportTime);
  * @param reportStr   Ver.: always
  */
 bool emberAfManagerPutReportTimeCallback(uint16_t reportStr);
+/** @brief Manager Cluster Put Time Report
+ *
+ * 
+ *
+ * @param puTimeReport   Ver.: always
+ */
+bool emberAfManagerPutTimeReportCallback(uint8_t puTimeReport);
 /** @brief Manager Cluster Server Attribute Changed
  *
  * Server Attribute Changed

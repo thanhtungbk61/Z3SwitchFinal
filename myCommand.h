@@ -46,6 +46,7 @@ uint8_t deleteCommand();
 
 // send to Node V2
 //get
+uint8_t readAttributeSensor(netDeviceStruct netD, netResourceStruct netR);
 uint8_t readAttributeLight(netDeviceStruct netD, netResourceStruct netR);
 uint8_t readDimmingAttributeLight(netDeviceStruct netD, netResourceStruct netR);
 uint8_t readPingAttributeLight(netDeviceStruct netD, netResourceStruct netR);
@@ -57,6 +58,7 @@ uint8_t putRealtime(netDeviceStruct netD, netResourceStruct netR,uint8_t* value)
 
 uint8_t putPing(netDeviceStruct netD, netResourceStruct netR,uint8_t* value);
 
+uint8_t putReportTime(netDeviceStruct netD, netResourceStruct netR,uint8_t* value);
 uint8_t getPing(netDeviceStruct netD, netResourceStruct netR);
 // extended function
 uint8_t putOnOffSchedual(char* scheString);

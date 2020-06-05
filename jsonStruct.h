@@ -41,6 +41,7 @@ bool getAcknowledgeFlag();
 // getRespon
 char* getRespon(packet p);
 char* addRespon(packet p);
+char* putRespon(packet p);
 // parse receive;
 packet getPacketStruct(char* packetString);
 char* createRespondPacket(packet p);

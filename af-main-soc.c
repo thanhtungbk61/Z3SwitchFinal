@@ -239,6 +239,7 @@ int emberAfMain(MAIN_FUNCTION_PARAMETERS)
   clear_flag();
   while (true) {
 
+	  halResetWatchdog();
       if( get_flag() )
       {
               process();

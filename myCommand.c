@@ -30,7 +30,7 @@ void fix32bit(char* data,uint8_t length)
         endian[i] = data[length - 1 - i];
     }
 #endif
-    strcpy(data,endian);
+    strncpy(data,endian,length);
 }
 uint8_t putCommand()
 {
@@ -83,7 +83,7 @@ uint8_t putCommand()
 			case ZCL_Group_ATTRIBUTE_ID:
 				value = base64_decode(receivePacket.netReadings[i].netValue,&valueLeng);
 				status = putGroupV2(netD,value,valueLeng);
-				emberAfCorePrintln("ZCL_Group_ATTRIBUTE_ID--value:%s",value);
+				emberAfCorePrintln("ZCL_Group_ATTRIBUTE_ID-");
 				free(value);
 				break;
 				//
@@ -91,18 +91,45 @@ uint8_t putCommand()
 				value = base64_decode(receivePacket.netReadings[i].netValue,&valueLeng);
 //				fix32bit(value,valueLeng);
 				status = putRealtime(netD,netR,(uint8_t*)value);
-				emberAfCorePrintln("ZCL_Realtime_ATTRIBUTE_ID:%s",value);
+				emberAfCorePrintln("ZCL_Realtime_ATTRIBUTE_ID");
 				break;
 			case ZCL_DimmingSchedule_ATTRIBUTE_ID:
 				value = base64_decode(receivePacket.netReadings[i].netValue,&valueLeng);
 				status = putDimmingSchedual(netD,value,valueLeng);
-				emberAfCorePrintln("ZCL_DimmingSchedule_ATTRIBUTE_ID--value:%s",value);
+				emberAfCorePrintln("ZCL_DimmingSchedule_ATTRIBUTE_ID-");
 				free(value);
 				break;
 			case ZCL_Ping_ATTRIBUTE_ID:
+				emberAfCorePrintln("strleng:%d---value:%s",strlen(receivePacket.netReadings[i].netValue),receivePacket.netReadings[i].netValue);
 				value = base64_decode(receivePacket.netReadings[i].netValue,&valueLeng);
+//				for(int i=0;i<valueLeng;i++)
+//				{
+//					emberAfCorePrintln("value[%d]:%d",i,value[i]);
+//				}
+//				emberAfCorePrintln("fix");
+				fix32bit(value,valueLeng);
+//				for(int i=0;i<valueLeng;i++)
+//				{
+//					emberAfCorePrintln("value[%d]:%d",i,value[i]);
+//				}
 				status = putPing(netD,netR,(uint8_t*)value);
-				emberAfCorePrintln("ZCL_Ping_ATTRIBUTE_ID--value:%s",value);
+				emberAfCorePrintln("ZCL_Ping_ATTRIBUTE_ID--");
+				free(value);
+				break;
+			case ZCL_ReportTime_ATTRIBUTE_ID:
+				emberAfCorePrintln("strleng:%d---value:%s",strlen(receivePacket.netReadings[i].netValue),receivePacket.netReadings[i].netValue);
+				value = base64_decode(receivePacket.netReadings[i].netValue,&valueLeng);
+//				for(int i=0;i<valueLeng;i++)
+//				{
+//					emberAfCorePrintln("value[%d]:%d",i,value[i]);
+//				}
+				fix32bit(value,valueLeng);
+//				for(int i=0;i<valueLeng;i++)
+//				{
+//					emberAfCorePrintln("value[%d]:%d",i,value[i]);
+//				}
+				status = putReportTime(netD,netR,(uint8_t*)value);
+				emberAfCorePrintln("ZCL_ReportTime_ATTRIBUTE_ID-");
 				free(value);
 				break;
 			default:
@@ -135,6 +162,10 @@ uint8_t getCommand()
 			case ZCL_ON_OFF_CLUSTER_ID:
 				emberAfCorePrintln("ZCL_ON_OFF_CLUSTER_ID");
 				status = readAttributeLight(netD,netR[i]);
+				break;
+			case ZCL_ILLUM_MEASUREMENT_CLUSTER_ID:
+				emberAfCorePrintln("ZCL_ILLUM_MEASUREMENT_CLUSTER_ID");
+				status = readAttributeSensor(netD,netR[i]);
 				break;
 			case ZCL_LEVEL_CONTROL_CLUSTER_ID:
 				emberAfCorePrintln("ZCL_LEVEL_CONTROL_CLUSTER_ID");
@@ -185,7 +216,7 @@ void reportAttributes(EmberAfClusterId clusterId,
                                      uint16_t bufLen,
 									 uint8_t typeCmd)
 {
-	packet p ={0,0,NULL,NULL,NULL,NULL,0,NULL,0,NULL};
+	packet p ={0,0,"\0","\0","\0","\0",0,"\0",0,"\0"};
 	p.cmd =typeCmd;
 	p.statusCode =0;
 
@@ -202,6 +233,10 @@ void reportAttributes(EmberAfClusterId clusterId,
 
 	netR.attribute = ((uint16_t)buffer[0]<<8) + (uint16_t)buffer[1];
 	netR.cluster = clusterId;
+	if(netR.cluster==ZCL_MANAGER_ID)
+	{
+		netR.attribute = 0x0015;
+	}
 	netR.profile = 0x0104;   // default profile
 	p.netReadings = (netReading*)malloc(1*sizeof(netReading));
 	p.netReadings[0].netResource = createResourceJson(netR);
@@ -216,6 +251,10 @@ void reportAttributes(EmberAfClusterId clusterId,
 	{
 		len = 2;
 	}
+	else if(netR.cluster ==  ZCL_ILLUM_MEASUREMENT_CLUSTER_ID)
+	{
+		len = 2;
+	}
 	else if(netR.cluster==ZCL_MANAGER_ID)
 	{
 		len =8;
@@ -223,6 +262,7 @@ void reportAttributes(EmberAfClusterId clusterId,
 		{
 			value[i] = buffer[i+2];
 		}
+		fix32bit(value,8);
 	}
 	else
 	{
@@ -241,14 +281,8 @@ void reportAttributes(EmberAfClusterId clusterId,
 	{
 		emberAfCorePrintln("value[%d]:%d",i,encodeValue[i]);
 	}
-//	emberAfCorePrintln("base64_encode:%s",encodeValue);
-//	emberAfCorePrintln("value%d,%s",value[0],encodeValue);
+	//p.netReadings[0].netValue[valueLength]
 	p.netReadings[0].netValue=encodeValue;
-//		p.netReadings[0].netValue = strdup(encodeValue);
-//	p.netReadings[0].netValue = encodeValue;
-
-
-
 	char* respond = createRespondPacket(p);
 	uartSendRespon(respond);
 	free(respond);
@@ -380,6 +414,28 @@ uint8_t putPing(netDeviceStruct netD, netResourceStruct netR,uint8_t* value)
 		return status;
 }
 
+uint8_t putReportTime(netDeviceStruct netD, netResourceStruct netR,uint8_t* value)
+{
+	//uint8_t sendType;
+	uint8_t status;
+	uint16_t valueSend = (value[1] <<8) | value[0];
+	emberAfFillCommandManagerPutReportTime(valueSend);
+	emAfCommandApsFrame->profileId=netR.profile  ;//emberAfProfileIdFromIndex(0);
+	emAfCommandApsFrame->clusterId =netR.cluster;
+	emAfCommandApsFrame->sourceEndpoint	=emberAfEndpointFromIndex(0);
+	emAfCommandApsFrame->destinationEndpoint =netD.endpoint;
+	if(netD.type==EMBER_OUTGOING_DIRECT)
+	{
+		status =emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT,netD.address);
+
+	}
+	else
+	{
+		status =emberAfSendCommandMulticast(netD.address);
+	}
+		return status;
+}
+
 uint8_t getPing(netDeviceStruct netD, netResourceStruct netR)
 {
 	//uint8_t sendType;
@@ -449,6 +505,17 @@ uint8_t readAttributeLight(netDeviceStruct netD, netResourceStruct netR)
 {
 	uint8_t attributeId[2] ={0,0};
 	emberAfFillCommandGlobalClientToServerReadAttributes(0x0006,attributeId,2);
+	emAfCommandApsFrame->profileId=netR.profile;//emberAfProfileIdFromIndex(0);
+	emAfCommandApsFrame->sourceEndpoint	=netD.endpoint;
+	emAfCommandApsFrame->destinationEndpoint =1;   // default endpoint
+	uint8_t status =emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT,netD.address);  // EMBER_OUTGOING_DIRECT =netD.type
+	return status;
+}
+
+uint8_t readAttributeSensor(netDeviceStruct netD, netResourceStruct netR)
+{
+	uint8_t attributeId[2] ={0,0};
+	emberAfFillCommandGlobalClientToServerReadAttributes(0x0400,attributeId,2);
 	emAfCommandApsFrame->profileId=netR.profile;//emberAfProfileIdFromIndex(0);
 	emAfCommandApsFrame->sourceEndpoint	=netD.endpoint;
 	emAfCommandApsFrame->destinationEndpoint =1;   // default endpoint

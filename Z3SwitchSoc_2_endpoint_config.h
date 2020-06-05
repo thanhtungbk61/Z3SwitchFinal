@@ -38,9 +38,10 @@
     { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_CLIENT), { (uint8_t*)0x0001 } }, /* 20 / Level Control / cluster revision*/\
     { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (0x00), { (uint8_t*)0x0001 } }, /* 21 / Over the Air Bootloading / cluster revision*/\
     { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_CLIENT), { (uint8_t*)0x0001 } }, /* 22 / Color Control / cluster revision*/\
-    { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_CLIENT), { (uint8_t*)0x0001 } }, /* 23 / ZLL Commissioning / cluster revision*/\
-    { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_CLIENT), { (uint8_t*)0x0001 } }, /* 24 / Manager / cluster revision*/\
-    { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (0x00), { (uint8_t*)0x0001 } }, /* 25 / Manager / cluster revision*/\
+    { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_CLIENT), { (uint8_t*)0x0001 } }, /* 23 / Illuminance Measurement / cluster revision*/\
+    { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_CLIENT), { (uint8_t*)0x0001 } }, /* 24 / ZLL Commissioning / cluster revision*/\
+    { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_CLIENT), { (uint8_t*)0x0001 } }, /* 25 / Manager / cluster revision*/\
+    { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (0x00), { (uint8_t*)0x0001 } }, /* 26 / Manager / cluster revision*/\
   }
 
 
@@ -61,7 +62,7 @@ const EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] =
     { 0x0006, (EmberAfAttributeMetadata*)&(generatedAttributes[19]), 1, 2, (CLUSTER_MASK_CLIENT| CLUSTER_MASK_DEFAULT_RESPONSE_FUNCTION), emberAfFuncArrayOnOffClusterClient, },    \
     { 0x0008, (EmberAfAttributeMetadata*)&(generatedAttributes[20]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
     { 0x0300, (EmberAfAttributeMetadata*)&(generatedAttributes[22]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
-    { 0x1000, (EmberAfAttributeMetadata*)&(generatedAttributes[23]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
+    { 0x1000, (EmberAfAttributeMetadata*)&(generatedAttributes[24]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
     { 0x0000, (EmberAfAttributeMetadata*)&(generatedAttributes[0]), 14, 0, (CLUSTER_MASK_SERVER), NULL,  },    \
     { 0x0003, (EmberAfAttributeMetadata*)&(generatedAttributes[14]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
     { 0x0003, (EmberAfAttributeMetadata*)&(generatedAttributes[15]), 2, 4, (CLUSTER_MASK_SERVER| CLUSTER_MASK_INIT_FUNCTION| CLUSTER_MASK_ATTRIBUTE_CHANGED_FUNCTION), emberAfFuncArrayIdentifyClusterServer, },    \
@@ -69,15 +70,16 @@ const EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] =
     { 0x0006, (EmberAfAttributeMetadata*)&(generatedAttributes[19]), 1, 2, (CLUSTER_MASK_CLIENT| CLUSTER_MASK_DEFAULT_RESPONSE_FUNCTION), emberAfFuncArrayOnOffClusterClient, },    \
     { 0x0008, (EmberAfAttributeMetadata*)&(generatedAttributes[20]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
     { 0x0019, (EmberAfAttributeMetadata*)&(generatedAttributes[21]), 1, 2, (CLUSTER_MASK_SERVER| CLUSTER_MASK_INIT_FUNCTION), emberAfFuncArrayOtaBootloadClusterServer, },    \
-    { 0xFC10, (EmberAfAttributeMetadata*)&(generatedAttributes[24]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
-    { 0xFC10, (EmberAfAttributeMetadata*)&(generatedAttributes[25]), 1, 2, (CLUSTER_MASK_SERVER), NULL,  },    \
+    { 0x0400, (EmberAfAttributeMetadata*)&(generatedAttributes[23]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
+    { 0xFC10, (EmberAfAttributeMetadata*)&(generatedAttributes[25]), 1, 2, (CLUSTER_MASK_CLIENT), NULL,  },    \
+    { 0xFC10, (EmberAfAttributeMetadata*)&(generatedAttributes[26]), 1, 2, (CLUSTER_MASK_SERVER), NULL,  },    \
   }
 
 
 // Endpoint types
 #define GENERATED_ENDPOINT_TYPES {        \
     { (EmberAfCluster*)&(generatedClusters[0]), 8, 16 }, \
-    { (EmberAfCluster*)&(generatedClusters[8]), 9, 18 }, \
+    { (EmberAfCluster*)&(generatedClusters[8]), 10, 20 }, \
   }
 
 
@@ -99,7 +101,7 @@ const EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] =
 // Cluster manufacturer codes
 #define GENERATED_CLUSTER_MANUFACTURER_CODES {      \
 {0x0010, 0x10A2}, \
-{0x000F, 0x10A2}, \
+{0x0011, 0x10A2}, \
   }
 #define GENERATED_CLUSTER_MANUFACTURER_CODE_COUNT (2)
 
@@ -116,7 +118,7 @@ const EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] =
 #define ATTRIBUTE_SINGLETONS_SIZE (191)
 
 // Total size of attribute storage
-#define ATTRIBUTE_MAX_SIZE 34
+#define ATTRIBUTE_MAX_SIZE 36
 
 // Array of endpoints that are supported
 #define FIXED_ENDPOINT_ARRAY { 1, 2 }
@@ -428,12 +430,12 @@ const EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] =
     { 0xFC10, 0x03, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / GetDimmingSchedule */ \
     { 0xFC10, 0x04, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / GetGroup */ \
     { 0xFC10, 0x05, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / PutGroup */ \
-    { 0xFC10, 0x06, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / GetReportTime */ \
+    { 0xFC10, 0x06, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_INCOMING_SERVER | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / GetReportTime */ \
     { 0xFC10, 0x07, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / PutReportTime */ \
     { 0xFC10, 0x08, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / GetHistoricalEvent */ \
     { 0xFC10, 0x09, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / PutHistoricalEvent */ \
-    { 0xFC10, 0x10, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / GetPing */ \
-    { 0xFC10, 0x11, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_INCOMING_SERVER | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / PutPing */ \
+    { 0xFC10, 0x10, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_INCOMING_SERVER | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / GetPing */ \
+    { 0xFC10, 0x11, COMMAND_MASK_OUTGOING_CLIENT | COMMAND_MASK_MANUFACTURER_SPECIFIC }, /* Manager / PutPing */ \
   }
 #define EMBER_AF_GENERATED_COMMAND_COUNT (73)
 

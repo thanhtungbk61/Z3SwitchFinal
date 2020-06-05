@@ -328,11 +328,22 @@ char* getRespon(packet p)
 	 return string;
 }
 
+char* putRespon(packet p)
+{
+	char str[100];// cmd mac //lk // dev//
+	//sprintf(str,"{\"cmd\":%d,\\"mac\":\"%s\",\"sc\":%d,\"sm\":\"%s\"}",p.cmd,p.netDevice,p.statusCode,"statusMessage");
+	sprintf(str,"{\"cmd\":%d,\"sc\":%d,\"dev\":\"%s\",\"sm\":\"%s\"}",p.cmd,p.statusCode,p.netDevice,"put command respond");
+	 char *string =(char*) malloc(sizeof(char)* strlen(str));
+	 strcpy(string,str);
+	 emberAfCorePrintln("prepare---packet:\n%s\n",string);
+	 return string;
+}
+
 char* addRespon(packet p)
 {
 	char str[100];// cmd mac //lk // dev//
 	//sprintf(str,"{\"cmd\":%d,\\"mac\":\"%s\",\"sc\":%d,\"sm\":\"%s\"}",p.cmd,p.netDevice,p.statusCode,"statusMessage");
-	sprintf(str,"{\"cmd\":%d,\"mac\":\"%s\",\"lk\":\"%s\",\"sc\":%d,\"dev\":\"%s\",\"sm\":\"%s\"}",p.cmd,p.MAC,p.linkKey,p.statusCode,p.netDevice,p.statusMessage);
+	sprintf(str,"{\"cmd\":%d,\"sc\":%d,\"dev\":\"%s\",\"sm\":\"%s\"}",p.cmd,p.statusCode,p.netDevice,"add device respond");
 	 char *string =(char*) malloc(sizeof(char)* strlen(str));
 	 strcpy(string,str);
 	 emberAfCorePrintln("prepare---packet:\n%s\n",string);

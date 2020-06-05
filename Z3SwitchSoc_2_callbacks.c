@@ -555,7 +555,7 @@ void emberAfPluginDeviceDatabaseDiscoveryCompleteCallback(const EmberAfDeviceInf
 
 	//
 //	p.cmd =ADD_COMMAND;
-	p.statusCode =device->status;
+	p.statusCode =0; // successful
 	p.MAC = createEUI64Str(device->eui64);
 	emberAfCorePrintln("createEUI64Str");
 	p.linkKey = createInstallcodeStr(addDeviceKey);
@@ -563,7 +563,7 @@ void emberAfPluginDeviceDatabaseDiscoveryCompleteCallback(const EmberAfDeviceInf
 	char* respondP = addRespon(p);
 	uartSendRespon(respondP);
 	free(respondP);
-	freePacket(p);
+//	freePacket(p);
 }
 
 //typedef struct {
@@ -622,12 +622,19 @@ void emberAfPluginOtaServerUpdateCompleteCallback(uint16_t manufacturerId,
 	emberAfCorePrintln("emberAfPluginOtaServerUpdateCompleteCallback");
 }
 
-boolean emberAfManagerPutPingCallback(int8u* Ping)
+boolean emberAfManagerGetPingCallback(int8u* Ping)
 {
-	emberAfCorePrintln("emberAfManagerPutPingCallback");
+	emberAfCorePrintln("emberAfManagerGetPingCallback");
+	reportAttributes(ZCL_MANAGER_ID,Ping,8,GET_COMMAND);
 	return true;
 }
 
+boolean emberAfManagerGetReportTimeCallback(int16u reportStr)
+{
+	emberAfCorePrintln("emberAfManagerGetReportTimeCallback");
+//	reportAttributes(ZCL_MANAGER_ID,reportStr,2,GET_COMMAND);
+	return true;
+}
 
 boolean emberAfMessageSentCallback(EmberOutgoingMessageType type,
                                 int16u indexOrDestination,
@@ -639,10 +646,18 @@ boolean emberAfMessageSentCallback(EmberOutgoingMessageType type,
 	emberAfCorePrintln("emberAfMessageSentCallback");
 	if(getAcknowledgeFlag())
 	{
-
+		if(receiveResourceStruct.cluster == apsFrame->clusterId)
+		{
+			char *respond = putRespon(receivePacket);
+			uartSendRespon(respond);
+			free(respond);
+		}
+		clearAcknowledgeFlag();
 		resetNetResource(receiveResourceStruct);
 		return true;
 	}
 	resetNetResource(receiveResourceStruct);
 	return true;
 }
+
+

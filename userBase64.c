@@ -18,7 +18,7 @@ char *base64_encode(const unsigned char *data,
                     int input_length,
                     int *output_length) {
 
-    *output_length = 4 * ((input_length + 2) / 3);
+    *output_length = 1 + 4 * ((input_length + 2) / 3);//add 1 byte '\0' ket thuc chuoi
 
     char *encoded_data = malloc(*output_length);
     if (encoded_data == NULL) return NULL;
@@ -40,6 +40,7 @@ char *base64_encode(const unsigned char *data,
     for (int i = 0; i < mod_table[input_length % 3]; i++)
         encoded_data[*output_length - 1 - i] = '=';
 
+    encoded_data[*output_length-1] = (char)'\0';
     return encoded_data;
 }
 
