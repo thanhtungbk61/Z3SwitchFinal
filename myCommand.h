@@ -74,6 +74,12 @@ void reportAttributes(EmberAfClusterId clusterId,
                                      uint8_t *buffer,
                                      uint16_t bufLen,
 									 uint8_t typeCmd);
+// report Ping
+
+void reportPing(EmberAfClusterId clusterId,
+                                     uint8_t *buffer,
+                                     uint16_t bufLen,
+									 uint8_t typeCmd);
 
 //#define ONOFF 0
 //#define SUBCRIBER 16

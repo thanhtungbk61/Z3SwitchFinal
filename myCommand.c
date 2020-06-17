@@ -294,7 +294,68 @@ void reportAttributes(EmberAfClusterId clusterId,
 //	free(p.netDevice);
 //	free(p.netReadings[0].netResource);
 }
-//
+// report Ping respond
+
+void reportPing(EmberAfClusterId clusterId,
+                                     uint8_t *buffer,
+                                     uint16_t bufLen,
+									 uint8_t typeCmd)
+{
+	packet p ={0,0,"\0","\0","\0","\0",0,"\0",0,"\0"};
+	p.cmd =typeCmd;
+	p.statusCode =0;
+
+	// can tao json:  netReading;  netDeviceStruct   netResourceStruct
+	// trong do netResourceStruct thuoc netReading
+	p.netReadingsCount =1;
+	netDeviceStruct netD;
+	netResourceStruct netR;
+
+	netD.address = emberGetSender();
+	netD.endpoint = 1; // default endpoint
+	netD.type =0;      // default type
+	p.netDevice =createDeviceJson(netD);
+
+	netR.attribute = ZCL_Ping_ATTRIBUTE_ID;
+	netR.cluster = clusterId;
+	netR.profile = 0x0104;   // default profile
+	p.netReadings = (netReading*)malloc(1*sizeof(netReading));
+	p.netReadings[0].netResource = createResourceJson(netR);
+//	p.netReadings[0].netResource =strdup(createResourceJson(netR));
+	p.netReadings[0].netValueType = 0;
+	//
+	char value[8];
+	for(int i=0;i<bufLen;i++)
+	{
+		value[i] = buffer[bufLen -i-1];
+	}
+//	fix32bit(value,8);
+
+//	for(int i=0;i<bufLen;i++)
+//	{
+//		emberAfCorePrintln("after Fix Value[%d]:%d",i,value[i]);
+//	}
+	//itoa(buffer[4],value,10);
+	int valueLength;
+	char* encodeValue =base64_encode((const unsigned char *)value,bufLen,&valueLength);
+	emberAfCorePrintln("base64_encode--lenIn:%d---lenOut:%d",bufLen,valueLength);
+//	for(int i=0;i<valueLength;i++)
+//	{
+//		emberAfCorePrintln("encodeValue[%d]:%d",i,encodeValue[i]);
+//	}
+	//p.netReadings[0].netValue[valueLength]
+	p.netReadings[0].netValue=encodeValue;
+	char* respond = createRespondPacket(p);
+	uartSendRespon(respond);
+	free(respond);
+	if(encodeValue!=NULL)
+	{
+		free(encodeValue);
+	}
+//	freePacket(p);
+//	free(p.netDevice);
+//	free(p.netReadings[0].netResource);
+}
 void putRespondCommand(packet p,uint8_t status)
 {
 	//char respond[200];

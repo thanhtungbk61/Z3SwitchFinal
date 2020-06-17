@@ -618,6 +618,13 @@ EmberAfStatus emberAfManagerServerCommandParse(EmberAfClusterCommand *cmd)
       if (cmd->bufLen < payloadOffset + 8u) { return EMBER_ZCL_STATUS_MALFORMED_COMMAND; }
       Ping = cmd->buffer + payloadOffset;
       wasHandled = emberAfManagerGetPingCallback(Ping);
+    } else if (cmd->mfgCode == 0x10A2 && cmd->commandId == ZCL_PUT_PING_COMMAND_ID) {
+      uint16_t payloadOffset = cmd->payloadStartIndex;
+      uint8_t* Ping;  // Ver.: always
+      // Command is fixed length: 8
+      if (cmd->bufLen < payloadOffset + 8u) { return EMBER_ZCL_STATUS_MALFORMED_COMMAND; }
+      Ping = cmd->buffer + payloadOffset;
+      wasHandled = emberAfManagerPutPingCallback(Ping);
     }
   }
   return status(wasHandled, true, cmd->mfgSpecific);

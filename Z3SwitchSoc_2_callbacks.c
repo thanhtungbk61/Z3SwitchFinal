@@ -155,8 +155,8 @@ void myDelayHandler(void )
 	                                                     15,
 	                                                     3,
 	                                                     20);
-		  emberAfPluginNetworkCreatorSecurityOpenNetwork();
-		  //emberAfPluginNetworkCreatorSecurityCloseNetwork();
+//		  emberAfPluginNetworkCreatorSecurityOpenNetwork();
+		  emberAfPluginNetworkCreatorSecurityCloseNetwork();
 		  emberEventControlSetDelayMS(myDelay, 5 * MY_DELAY_IN_MS);
 	  }
 	  else
@@ -228,15 +228,16 @@ void emberAfMainInitCallback(void)
 
 	  //Enabling USART Interrupts
 	  NVIC_EnableIRQ(USART3_RX_IRQn);
-	emberEventControlSetDelayMS(myDelay, 10 * MY_DELAY_IN_MS);
+	emberEventControlSetDelayMS(myDelay, 20 * MY_DELAY_IN_MS);
 }
 
 bool emberAfReadAttributesResponseCallback(EmberAfClusterId clusterId,
                                            uint8_t *buffer,
                                            uint16_t bufLen)
 {
+//	userNewNodeId =emberGetSender();
 //	reportAttributes(clusterId,buffer,bufLen);
-	emberAfCorePrintln("emberAfReadAttributesResponseCallback---clusterId:%d----",clusterId);
+	emberAfCorePrintln("emberAfReadAttributesResponseCallback---clusterId:%d----Sender:%d",clusterId,userNewNodeId);
 	for(int i=0;i<bufLen;i++)
 	{
 		emberAfCorePrintln("%d",buffer[i]);
@@ -257,6 +258,7 @@ bool emberAfReportAttributesCallback(EmberAfClusterId clusterId,
                                      uint8_t *buffer,
                                      uint16_t bufLen)
 {
+	userNewNodeId =emberGetSender();
 	emberAfCorePrintln("emberAfReportAttributesCallback---clusterId:%d----all callback",clusterId);
 	for(int i=0;i<bufLen;i++)
 	{
@@ -319,52 +321,10 @@ void commissioningEventHandler(void)
     {
     	emberAfCorePrintln("send long message");
     	emberAfPluginNetworkCreatorSecurityOpenNetwork();
-    	//putOnOffSchV2("012345678901234567890123456789012345678901234567890123456789012345678901234567890012345678901234567890123456789012345678901234567890123456789",110);
-//    	uint8_t payloadLeng =emberMaximumApsPayloadLength();
-//    	emberAfCorePrintln("\n\npayloadLeng:%d",payloadLeng);
-//    	uint8_t status=255;
-//
-//    	char schedule1[] = "012345678901234567890123456789012345678901234567890123456789012345678911";
-//        status = putOnOffSchedual(schedule1);
-//    	if(count%2==0)
-//    	{
-//    		char schedule1[] = "012345678901234567890123456789012345678901234567890123456789012345678911";
-//        	status = putOnOffSchedual(schedule1);
-//        	emberAfCorePrintln("\nputOnOffSchedual:%d---send: 72 byte",status);
-//    	}
-//    	else if(count%3)
-//    	{
-//    		char schedule1[] = "0123456789012345678901234567890123456789012345678901234567890123456789012345";
-//        	status = putOnOffSchedual(schedule1);
-//        	emberAfCorePrintln("\nputOnOffSchedual:%d---send: 80 byte",status);
-//    	}
-//    	else
-//    	{
-//    		char schedule1[] = "012345678901234567890123456789012345678901234567890123456789012345678901234567890012345678901234567890123456789012345678911";
-//        	status = putOnOffSchedual(schedule1);
-//        	emberAfCorePrintln("\nputOnOffSchedual:%d---send: 128 byte",status);
-//    	}
-
-
     }
-//      emberAfFillCommandOnOffClusterToggle();
-//    } else if (lastButton == BUTTON1) {
-//      uint8_t nextLevel = (uint8_t)(0xFF & emberGetPseudoRandomNumber());
-//      emberAfFillCommandLevelControlClusterMoveToLevel(nextLevel, TRANSITION_TIME_DS, 0, 0);
-//    }
-//    status = emberAfSendCommandUnicastToBindings();
-//    emberAfCorePrintln("%p: 0x%X", "Send to bindings", status);
   } else {
 	  emberAfPluginNetworkCreatorSecurityOpenNetwork();
 	  emberAfCorePrintln("OpenNetwork");
-//    bool touchlink = (lastButton == BUTTON1);
-//    status = (touchlink
-//              ? emberAfZllInitiateTouchLink()
-//              : emberAfPluginNetworkSteeringStart());
-//    emberAfCorePrintln("%p network %p: 0x%X",
-//                       (touchlink ? "Touchlink" : "Join"),
-//                       "start",
-//                       status);
     emberEventControlSetActive(ledEventControl);
     commissioning = true;
   }
@@ -546,6 +506,7 @@ void emberAfPluginDeviceDatabaseDiscoveryCompleteCallback(const EmberAfDeviceInf
 	netD.type =0;       // unicast
 
 	packet p ={0,0,NULL,NULL,NULL,NULL,0,NULL,0,NULL};
+	p.cmd = ADD_COMMAND;
 	p.netDevice =createDeviceJson(netD);
 	emberAfCorePrintln("emberAfPluginDeviceDatabaseDiscoveryCompleteCallback---createDeviceJson");
 	// hard code
@@ -660,4 +621,9 @@ boolean emberAfMessageSentCallback(EmberOutgoingMessageType type,
 	return true;
 }
 
-
+boolean emberAfManagerPutPingCallback(int8u* Ping)
+{//REPORT_COMMAND
+	emberAfCorePrintln("emberAfManagerPutPingCallback");
+	reportPing(ZCL_MANAGER_ID,Ping,8,REPORT_COMMAND);
+	return true;
+}
